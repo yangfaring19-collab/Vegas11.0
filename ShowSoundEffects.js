@@ -126,14 +126,12 @@ function OnProjectOpened(sender, args)
 // ---------------------------------------------------------
 function RegisterVegasEvents()
 {
-    Vegas.TrackCountChanged += OnTrackCountChanged;
-    Vegas.TrackEventCountChanged += OnTrackEventCountChanged;
-    Vegas.TrackEventTimeChanged += OnTrackEventTimeChanged;
-    Vegas.TrackEventDataChanged += OnTrackEventDataChanged;
-    Vegas.TrackEventStateChanged += OnTrackEventStateChanged;
-    Vegas.ProjectOpened += OnProjectOpened;
+    Vegas.Transport.TrackCountChanged += OnTrackCountChanged;
+    Vegas.Transport.TrackEventCountChanged += OnTrackEventCountChanged;
+    Vegas.Transport.TrackEventTimeChanged += OnTrackEventTimeChanged;
+    Vegas.Transport.TrackEventDataChanged += OnTrackEventDataChanged;
+    Vegas.Transport.TrackEventStateChanged += OnTrackEventStateChanged;
 }
-
 
 // ---------------------------------------------------------
 // Vegas 이벤트 해제
@@ -142,12 +140,11 @@ function UnregisterVegasEvents()
 {
     try
     {
-        Vegas.TrackCountChanged -= OnTrackCountChanged;
-        Vegas.TrackEventCountChanged -= OnTrackEventCountChanged;
-        Vegas.TrackEventTimeChanged -= OnTrackEventTimeChanged;
-        Vegas.TrackEventDataChanged -= OnTrackEventDataChanged;
-        Vegas.TrackEventStateChanged -= OnTrackEventStateChanged;
-        Vegas.ProjectOpened -= OnProjectOpened;
+        Vegas.Transport.TrackCountChanged -= OnTrackCountChanged;
+        Vegas.Transport.TrackEventCountChanged -= OnTrackEventCountChanged;
+        Vegas.Transport.TrackEventTimeChanged -= OnTrackEventTimeChanged;
+        Vegas.Transport.TrackEventDataChanged -= OnTrackEventDataChanged;
+        Vegas.Transport.TrackEventStateChanged -= OnTrackEventStateChanged;
     }
     catch (e)
     {
