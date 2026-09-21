@@ -43,37 +43,21 @@ function RefreshSoundEffects()
 
     try
     {
-        soundEffectsListView.BeginUpdate();
+        // =================================================
+        // 1. 효과음 정보 수집
+        // =================================================
 
-        soundEffectsListView.Items.Clear();
-
-        var count = 0;
-
-        // -------------------------------------------------
-        // 모든 Track 검색
-        // -------------------------------------------------
+        var soundEffects = [];
 
         for (var track : Track in Vegas.Project.Tracks)
         {
-            // Audio Track만 확인
             if (!track.IsAudio())
                 continue;
 
-
-            // -------------------------------------------------
-            // Track 안의 Event 검색
-            // -------------------------------------------------
-
             for (var evnt : TrackEvent in track.Events)
             {
-                // Audio Event만 확인
                 if (!evnt.IsAudio())
                     continue;
-
-
-                // -------------------------------------------------
-                // Active Take 확인
-                // -------------------------------------------------
 
                 var take = evnt.ActiveTake;
 
@@ -83,55 +67,86 @@ function RefreshSoundEffects()
                 if (!take.IsValid())
                     continue;
 
-
-                // -------------------------------------------------
-                // Media Path
-                // -------------------------------------------------
-
                 var filePath = take.MediaPath;
 
                 if (filePath == null || filePath == "")
                     continue;
 
+                var effect = new Object();
 
-                var fileName = Path.GetFileName(filePath);
+                effect.Start = evnt.Start;
+                effect.StartTicks = evnt.Start.ToMilliseconds();
+                effect.TrackName = track.Name;
+                effect.FileName = Path.GetFileName(filePath);
 
-                var startTime = evnt.Start.ToString();
-
-
-                // -------------------------------------------------
-                // ListView Item
-                // -------------------------------------------------
-
-                var item = new ListViewItem(startTime);
-
-                item.SubItems.Add(track.Name);
-                item.SubItems.Add(fileName);
-
-                soundEffectsListView.Items.Add(item);
-
-                count++;
+                soundEffects.push(effect);
             }
         }
 
 
-        // -----------------------------------------------------
-        // Total 표시
-        // -----------------------------------------------------
+        // =================================================
+        // 2. 시작 시간 기준 정렬
+        // =================================================
+
+        soundEffects.sort(
+            function(a, b)
+            {
+                if (a.StartTicks < b.StartTicks)
+                    return -1;
+
+                if (a.StartTicks > b.StartTicks)
+                    return 1;
+
+                return 0;
+            }
+        );
+
+
+        // =================================================
+        // 3. ListView 갱신
+        // =================================================
+
+        soundEffectsListView.BeginUpdate();
+
+        soundEffectsListView.Items.Clear();
+
+        for (var i = 0; i < soundEffects.length; i++)
+        {
+            var effect = soundEffects[i];
+
+            var item = new ListViewItem(
+                effect.Start.ToString()
+            );
+
+            item.SubItems.Add(
+                effect.TrackName
+            );
+
+            item.SubItems.Add(
+                effect.FileName
+            );
+
+            // 나중에 선택했을 때 사용할 정보
+            item.Tag = effect.FileName;
+
+            soundEffectsListView.Items.Add(item);
+        }
+
+
+        // =================================================
+        // 4. Total
+        // =================================================
 
         if (soundEffectsStatusLabel != null)
         {
             soundEffectsStatusLabel.Text =
-                "Total: " + count;
+                "Total: " + soundEffects.length;
         }
     }
     catch (e)
     {
         // Vegas 프로젝트가 변경되는 순간에는
         // 객체 접근이 일시적으로 실패할 수 있음.
-        //
-        // 이 경우 오류창을 띄우지 않고 다음 Timer Tick에서
-        // 다시 시도하도록 함.
     }
     finally
     {
@@ -141,10 +156,9 @@ function RefreshSoundEffects()
     }
 
 
-    // ---------------------------------------------------------
-    // 갱신 중 새로운 갱신 요청이 들어왔다면
-    // 한 번만 다시 실행
-    // ---------------------------------------------------------
+    // =====================================================
+    // 갱신 중 새로운 요청이 들어온 경우
+    // =====================================================
 
     if (refreshPending)
     {
@@ -326,6 +340,23 @@ function ShowSoundEffects()
         soundEffectsListView
     );
 
+    soundEffectsListView.SelectedIndexChanged +=
+        function(sender, args)
+        {
+            if (soundEffectsListView.SelectedItems.Count == 0)
+            {
+                ClearSoundEffectHighlight();
+                return;
+            }
+
+            var selectedItem =
+                soundEffectsListView.SelectedItems[0];
+
+            HighlightSameSoundEffects(
+                selectedItem
+            );
+        };
+
 
     // =====================================================
     // Status Label
@@ -396,6 +427,72 @@ function ShowSoundEffects()
     // =====================================================
 
     soundEffectsForm.Show();
+}
+
+// =========================================================
+// 동일한 이름의 사운드 효과 강조
+// =========================================================
+
+function HighlightSameSoundEffects(selectedItem)
+{
+    if (soundEffectsListView == null)
+        return;
+
+    if (selectedItem == null)
+        return;
+
+    var selectedFileName =
+        selectedItem.Tag;
+
+    if (selectedFileName == null)
+        return;
+
+
+    // 기존 강조 제거
+    ClearSoundEffectHighlight();
+
+
+    // 같은 파일명을 가진 항목 강조
+    for (var i = 0;
+         i < soundEffectsListView.Items.Count;
+         i++)
+    {
+        var item =
+            soundEffectsListView.Items[i];
+
+        if (item.Tag == selectedFileName)
+        {
+            item.BackColor =
+                System.Drawing.Color.LightBlue;
+
+            item.ForeColor =
+                System.Drawing.Color.Black;
+        }
+    }
+}
+
+// =========================================================
+// 강조표시 삭제
+// =========================================================
+
+function ClearSoundEffectHighlight()
+{
+    if (soundEffectsListView == null)
+        return;
+
+    for (var i = 0;
+         i < soundEffectsListView.Items.Count;
+         i++)
+    {
+        var item =
+            soundEffectsListView.Items[i];
+
+        item.BackColor =
+            System.Drawing.SystemColors.Window;
+
+        item.ForeColor =
+            System.Drawing.SystemColors.WindowText;
+    }
 }
 
 
