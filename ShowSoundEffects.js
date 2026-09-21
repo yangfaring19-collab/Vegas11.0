@@ -235,6 +235,73 @@ function StopRefreshTimer()
 
 
 // =========================================================
+// 동일한 이름의 사운드 효과 강조
+// =========================================================
+
+function HighlightSameSoundEffects(selectedItem)
+{
+    if (soundEffectsListView == null)
+        return;
+
+    if (selectedItem == null)
+        return;
+
+    var selectedFileName =
+        selectedItem.Tag;
+
+    if (selectedFileName == null)
+        return;
+
+
+    // 기존 강조 제거
+    ClearSoundEffectHighlight();
+
+
+    // 같은 파일명을 가진 항목 강조
+    for (var i = 0;
+         i < soundEffectsListView.Items.Count;
+         i++)
+    {
+        var item =
+            soundEffectsListView.Items[i];
+
+        if (item.Tag == selectedFileName)
+        {
+            item.BackColor =
+                System.Drawing.Color.LightBlue;
+
+            item.ForeColor =
+                System.Drawing.Color.Black;
+        }
+    }
+}
+
+// =========================================================
+// 강조표시 삭제
+// =========================================================
+
+function ClearSoundEffectHighlight()
+{
+    if (soundEffectsListView == null)
+        return;
+
+    for (var i = 0;
+         i < soundEffectsListView.Items.Count;
+         i++)
+    {
+        var item =
+            soundEffectsListView.Items[i];
+
+        item.BackColor =
+            System.Drawing.SystemColors.Window;
+
+        item.ForeColor =
+            System.Drawing.SystemColors.WindowText;
+    }
+}
+
+
+// =========================================================
 // Form 생성
 // =========================================================
 
@@ -274,15 +341,30 @@ function ShowSoundEffects()
 
 
     // =====================================================
+    // 메인 패널
+    // =====================================================
+
+    var mainPanel = new Panel();
+
+    mainPanel.Dock = DockStyle.Fill;
+
+    soundEffectsForm.Controls.Add(mainPanel);
+
+
+    // =====================================================
     // 제목
     // =====================================================
 
     var titleLabel = new Label();
 
-    titleLabel.Text = "Sound Effects in Project";
+    titleLabel.Text =
+        "Sound Effects in Project";
 
-    titleLabel.Dock = DockStyle.Top;
-    titleLabel.Height = 35;
+    titleLabel.Dock =
+        DockStyle.Top;
+
+    titleLabel.Height =
+        35;
 
     titleLabel.Font =
         new System.Drawing.Font(
@@ -297,7 +379,7 @@ function ShowSoundEffects()
     titleLabel.Padding =
         new Padding(10, 0, 0, 0);
 
-    soundEffectsForm.Controls.Add(titleLabel);
+    mainPanel.Controls.Add(titleLabel);
 
 
     // =====================================================
@@ -306,7 +388,8 @@ function ShowSoundEffects()
 
     soundEffectsListView = new ListView();
 
-    soundEffectsListView.Dock = DockStyle.Fill;
+    soundEffectsListView.Dock =
+        DockStyle.Fill;
 
     soundEffectsListView.View =
         View.Details;
@@ -316,9 +399,6 @@ function ShowSoundEffects()
 
     soundEffectsListView.GridLines =
         true;
-
-
-    // Columns
 
     soundEffectsListView.Columns.Add(
         "Time",
@@ -336,10 +416,7 @@ function ShowSoundEffects()
     );
 
 
-    soundEffectsForm.Controls.Add(
-        soundEffectsListView
-    );
-
+    // 선택된 파일과 같은 이름의 항목 강조
     soundEffectsListView.SelectedIndexChanged +=
         function(sender, args)
         {
@@ -356,6 +433,11 @@ function ShowSoundEffects()
                 selectedItem
             );
         };
+
+
+    mainPanel.Controls.Add(
+        soundEffectsListView
+    );
 
 
     // =====================================================
@@ -427,72 +509,6 @@ function ShowSoundEffects()
     // =====================================================
 
     soundEffectsForm.Show();
-}
-
-// =========================================================
-// 동일한 이름의 사운드 효과 강조
-// =========================================================
-
-function HighlightSameSoundEffects(selectedItem)
-{
-    if (soundEffectsListView == null)
-        return;
-
-    if (selectedItem == null)
-        return;
-
-    var selectedFileName =
-        selectedItem.Tag;
-
-    if (selectedFileName == null)
-        return;
-
-
-    // 기존 강조 제거
-    ClearSoundEffectHighlight();
-
-
-    // 같은 파일명을 가진 항목 강조
-    for (var i = 0;
-         i < soundEffectsListView.Items.Count;
-         i++)
-    {
-        var item =
-            soundEffectsListView.Items[i];
-
-        if (item.Tag == selectedFileName)
-        {
-            item.BackColor =
-                System.Drawing.Color.LightBlue;
-
-            item.ForeColor =
-                System.Drawing.Color.Black;
-        }
-    }
-}
-
-// =========================================================
-// 강조표시 삭제
-// =========================================================
-
-function ClearSoundEffectHighlight()
-{
-    if (soundEffectsListView == null)
-        return;
-
-    for (var i = 0;
-         i < soundEffectsListView.Items.Count;
-         i++)
-    {
-        var item =
-            soundEffectsListView.Items[i];
-
-        item.BackColor =
-            System.Drawing.SystemColors.Window;
-
-        item.ForeColor =
-            System.Drawing.SystemColors.WindowText;
-    }
 }
 
 
