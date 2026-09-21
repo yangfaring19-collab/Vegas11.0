@@ -103,19 +103,7 @@ function OnTrackEventTimeChanged(sender, args)
 }
 
 
-function OnTrackEventDataChanged(sender, args)
-{
-    RefreshSoundEffects();
-}
-
-
 function OnTrackEventStateChanged(sender, args)
-{
-    RefreshSoundEffects();
-}
-
-
-function OnProjectOpened(sender, args)
 {
     RefreshSoundEffects();
 }
@@ -126,12 +114,10 @@ function OnProjectOpened(sender, args)
 // ---------------------------------------------------------
 function RegisterVegasEvents()
 {
-    Vegas.TrackCountChanged += OnTrackCountChanged;
-    Vegas.TrackEventCountChanged += OnTrackEventCountChanged;
-    Vegas.TrackEventTimeChanged += OnTrackEventTimeChanged;
-    Vegas.TrackEventDataChanged += OnTrackEventDataChanged;
-    Vegas.TrackEventStateChanged += OnTrackEventStateChanged;
-    Vegas.ProjectOpened += OnProjectOpened;
+    Vegas.Transport.TrackCountChanged += OnTrackCountChanged;
+    Vegas.Transport.TrackEventCountChanged += OnTrackEventCountChanged;
+    Vegas.Transport.TrackEventTimeChanged += OnTrackEventTimeChanged;
+    Vegas.Transport.TrackEventStateChanged += OnTrackEventStateChanged;
 }
 
 
@@ -142,12 +128,10 @@ function UnregisterVegasEvents()
 {
     try
     {
-        Vegas.TrackCountChanged -= OnTrackCountChanged;
-        Vegas.TrackEventCountChanged -= OnTrackEventCountChanged;
-        Vegas.TrackEventTimeChanged -= OnTrackEventTimeChanged;
-        Vegas.TrackEventDataChanged -= OnTrackEventDataChanged;
-        Vegas.TrackEventStateChanged -= OnTrackEventStateChanged;
-        Vegas.ProjectOpened -= OnProjectOpened;
+        Vegas.Transport.TrackCountChanged -= OnTrackCountChanged;
+        Vegas.Transport.TrackEventCountChanged -= OnTrackEventCountChanged;
+        Vegas.Transport.TrackEventTimeChanged -= OnTrackEventTimeChanged;
+        Vegas.Transport.TrackEventStateChanged -= OnTrackEventStateChanged;
     }
     catch (e)
     {
